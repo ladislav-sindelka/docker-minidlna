@@ -19,24 +19,7 @@ then
   date > /etc/minidlna.configured
 fi
 
-# minissdp
-#  get interfaces
-if [ -z "$SSDP_IFACE" ]
-then
-  SSDP_INTERFACE="$( ip addr | grep -i up | egrep -iv '(lo|br-|veth|docker).*:' | cut -f2 -d':' | tr -d ' ' )"
-  if [ $( echo "$INTERFACE" | wc -l ) -gt 1 ]
-  then
-    echo -e "You have more than one interface, choose one!:\n$SSDP_INTERFACE"
-    exit 1
-  fi
-  SSDP_IFACE=$SSDP_INTERFACE
-fi
-if [ $( ss -lntpu | grep -i 1900 | wc -l ) -gt 0 ]
-then
-  echo "Warning, another UPNP service use same UDP port!"
-  echo " Please stop another server and try again."
-fi
-minissdpd -i $SSDP_IFACE || { echo "SSDP service start problem"; exit 1; }
+minissdpd || { echo "SSDP service start problem"; exit 1; }
 
 
 # remove stucked pid file
